@@ -131,7 +131,7 @@ rect[data-zone]:hover{fill-opacity:.65!important;cursor:pointer}
 <div id="demo-banner">
   <strong>DEMONSTRATION</strong>
   Fictional building: Meridian Commercial Center. All data, imagery, and defect findings are illustrative.
-  Sample annotations are pre-loaded. Try rating zones, adding annotations, and running the CSV or print export.
+  Sample ratings and notes are pre-loaded. Try rating zones, adding annotations, and running the CSV or print export.
 </div>
 
 <div id="titlebar">
@@ -476,10 +476,10 @@ const DEMO_ANNOTATIONS = {
   north: {
     n_r1c1: { rating:"SWARMP", category:"Cracking", categoryOther:"", flag:false,
       notes:"Hairline crack vertical through mortar joint at 3rd floor sill line, approx. 18\". No efflorescence present. Thermal imaging did not identify moisture infiltration at this location. Monitor for progression.",
-      annotations:[{type:"circle",x1:258,y1:152,x2:388,y2:268}] },
+      annotations:[] },
     n_r2c2: { rating:"Unsafe", category:"Spalling", categoryOther:"", flag:true,
       notes:"Active spalling on 2nd floor masonry surface. Loose 4\"×6\" section. Requires remediation before next cycle. Engineer review required.",
-      annotations:[{type:"rect",x1:228,y1:118,x2:418,y2:276}] },
+      annotations:[] },
     n_r3c0: { rating:"SWARMP", category:"Efflorescence", categoryOther:"", flag:false,
       notes:"White mineral deposit pattern consistent with ground moisture infiltration through masonry. Review foundation drainage at grade.",
       annotations:[] },
@@ -490,7 +490,7 @@ const DEMO_ANNOTATIONS = {
   east: {
     e_r1c1: { rating:"SWARMP", category:"Missing Mortar", categoryOther:"", flag:false,
       notes:"Mortar joint deterioration at window head, approx. 2–3 linear feet affected. Pointed 2018 per client records; repointing likely required.",
-      annotations:[{type:"arrow",x1:168,y1:272,x2:306,y2:196}] }
+      annotations:[] }
   }
 };
 
