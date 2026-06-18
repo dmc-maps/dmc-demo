@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interactive Demo — Meridian Commercial Center — Digital Mapping Consultants</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#121212;color:#eee;font-family:system-ui,-apple-system,sans-serif;font-size:14px;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── Nav (dark) ── */
+.site-nav{background:#0d1117;padding:0 20px;display:flex;align-items:center;height:48px;border-bottom:1px solid #1e2740;flex-shrink:0;z-index:300;position:sticky;top:0}
+.nav-brand{color:#c8d0e0;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;white-space:nowrap;margin-right:auto}
+.nav-links{display:flex;gap:2px;align-items:center}
+.nav-links a{color:#8fa8cc;text-decoration:none;font-size:12px;padding:5px 11px;border-radius:4px;white-space:nowrap}
+.nav-links a:hover{color:#c8d0e0;background:rgba(255,255,255,.05)}
+.nav-links a.active{color:#fff;background:rgba(255,255,255,.08)}
+.nav-links a.nav-cta{background:#2d5a8e;color:#fff;font-weight:600;margin-left:6px}
+.nav-links a.nav-cta:hover{background:#4a7fc1}
+
+/* ── Demo banner ── */
+#demo-banner{background:#0f3020;color:#7dba9a;font-size:12px;padding:7px 20px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid #1a4a30}
+#demo-banner strong{color:#a0d8b8}
+
+/* ── Viewer chrome ── */
+#titlebar{background:#1a1a2e;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
+#titlebar h1{font-size:14px;font-weight:600}
+#legend{display:flex;gap:14px;align-items:center;font-size:12px;color:#aaa}
+#legend span{display:flex;align-items:center;gap:4px}
+#legend i{display:inline-block;width:12px;height:12px;border-radius:2px}
+#toolbar{background:#16213e;padding:6px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex-shrink:0}
+#toolbar button,#toolbar label{padding:6px 14px;background:#0f3460;color:#eee;border:none;border-radius:4px;cursor:pointer;font-size:12px}
+#toolbar button:hover,#toolbar label:hover{background:#e94560}
+#tabs{display:flex;gap:4px;padding:8px 12px;background:#1a1a2e;flex-wrap:wrap;flex-shrink:0}
+.tab-btn{padding:6px 18px;background:#2a2a2a;color:#aaa;border:none;border-radius:4px 4px 0 0;cursor:pointer;font-size:13px}
+.tab-btn.active{background:#0f3460;color:#fff}
+
+/* ── Face panels ── */
+.face-panel{flex:1;overflow:hidden}
+#panels-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+/* ── Drawing container ── */
+.drawing-container{position:relative;overflow:hidden;background:#000;flex-basis:65%}
+.drawing-container img{width:100%;height:100%;object-fit:contain;display:block}
+.drawing-container svg{position:absolute;top:0;left:0;pointer-events:all}
+rect[data-zone]:hover{fill-opacity:.65!important;cursor:pointer}
+
+/* ── Notes panel ── */
+.notes-panel{flex-basis:35%;padding:16px;overflow-y:auto;background:#1e1e1e;color:#eee;display:flex;flex-direction:column;gap:10px}
+.rating-btn{flex:1;padding:6px 4px;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold;opacity:.38;transition:opacity .15s}
+.rating-btn.active{opacity:1}
+.safe-btn{background:#1a5c1a;color:#7fff7f}
+.swarmp-btn{background:#5c3d00;color:#ffcc44}
+.unsafe-btn{background:#5c0000;color:#ff6666}
+.annot-btn{padding:4px 10px;background:#0f3460;color:#eee;border:none;border-radius:4px;cursor:pointer;font-size:12px}
+.annot-btn.active{background:#e94560}
+
+/* ── Lightbox ── */
+#lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center}
+#lightbox.open{display:flex}
+#lb-inner{background:#1e1e1e;border-radius:8px;padding:20px;max-width:95vw;max-height:95vh;overflow-y:auto;position:relative;width:90vw}
+#lb-imgs{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;position:relative}
+#lb-imgs img{max-height:60vh;max-width:44vw;object-fit:contain;border-radius:4px;flex:1;min-width:200px;display:block}
+#lb-close{position:absolute;top:10px;right:14px;background:none;border:none;color:#eee;font-size:26px;cursor:pointer;line-height:1;z-index:10}
+#lb-canvas{position:absolute;top:0;left:0;pointer-events:all;cursor:crosshair}
+
+/* ── Zoom controls ── */
+.zoom-controls{position:absolute;bottom:10px;right:10px;display:flex;flex-direction:column;gap:4px;z-index:10}
+.zoom-controls button{width:30px;height:30px;background:rgba(15,52,96,.9);color:#eee;border:none;border-radius:4px;cursor:pointer;font-size:16px;line-height:1}
+
+/* ── Print ── */
+@media print{
+  .site-nav,#demo-banner,#toolbar,#tabs,#lightbox,.annot-btn,.rating-btn,.zoom-controls,#titlebar{display:none!important}
+  body{background:#fff;color:#000}
+  #print-report{display:block!important}
+  .face-panel{display:none!important}
+}
+#print-report{display:none}
+.print-page{page-break-after:always;padding:20px}
+.print-grid-container{position:relative;display:inline-block;width:100%;max-width:100%}
+.print-grid-container img{width:100%;display:block}
+.print-grid-container svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.notes-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11px}
+.notes-table th,.notes-table td{border:1px solid #ccc;padding:4px 7px;text-align:left;vertical-align:top}
+.notes-table th{background:#eee;font-weight:bold}
+
+@media(max-width:768px){
+  .face-inner{flex-direction:column!important}
+  .drawing-container{flex-basis:50vh!important}
+  .notes-panel{flex-basis:auto!important;max-height:40vh}
+  #lb-imgs img{max-width:90vw!important;max-height:32vh!important}
+  #lb-inner{max-width:98vw!important;max-height:98vh!important;padding:12px}
+  #lb-hdr{font-size:13px}
+  #lb-imgs{flex-direction:column}
+  #lb-imgs img{max-width:100%!important;min-width:100%!important}
+}
+@media(max-width:480px){
+  #titlebar{flex-direction:column;align-items:flex-start;gap:4px}
+  #legend{font-size:11px;gap:8px;flex-wrap:wrap}
+  #toolbar{flex-direction:column;gap:4px;width:100%}
+  #toolbar button,#toolbar label{width:100%;padding:8px 12px}
+  .drawing-container{flex-basis:45vh!important}
+  .notes-panel{max-height:35vh;padding:12px}
+  .rating-btn{padding:4px 2px;font-size:11px}
+  .annot-btn{padding:3px 8px;font-size:11px}
+  #lb-imgs{margin-bottom:8px}
+  #lb-close{top:6px;right:8px;font-size:22px}
+  textarea{height:60px!important}
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">Digital Mapping Consultants</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="case-study.html">Case Study</a>
+    <a href="viewer.html" class="active nav-cta">Interactive Demo</a>
+    <a href="deliverables.html">Deliverables</a>
+    <a href="why-dmc.html">Why DMC</a>
+  </div>
+</nav>
+
+<div id="demo-banner">
+  <strong>DEMONSTRATION</strong>
+  Fictional building: Meridian Commercial Center. All data, imagery, and defect findings are illustrative.
+  Sample annotations are pre-loaded. Try rating zones, adding annotations, and running the CSV or print export.
+</div>
+
+<div id="titlebar">
+  <h1>Meridian Commercial Center, Project DMC-2025-041</h1>
+  <div id="legend">
+    <span><i style="background:#cc3333"></i>No Images</span>
+    <span><i style="background:#ffcc00"></i>RGB Only</span>
+    <span><i style="background:#30a080"></i>RGB+Thermal</span>
+    <span style="margin-left:8px"><i style="background:#1a5c1a;border:1px solid #7fff7f"></i>Safe</span>
+    <span><i style="background:#5c3d00;border:1px solid #ffcc44"></i>SWARMP</span>
+    <span><i style="background:#5c0000;border:1px solid #ff6666"></i>Unsafe</span>
+  </div>
+</div>
+<div id="toolbar">
+  <button onclick="saveAnnotations()">💾 Save Annotations</button>
+  <label>📂 Load Annotations<input type="file" accept=".json" style="display:none" onchange="loadAnnotations(event)"></label>
+  <button onclick="exportFlagged()">🚩 Export Flagged</button>
+  <button onclick="exportCSV()">📊 Export CSV</button>
+  <button onclick="buildPrintReport()">🖨️ Print Report</button>
+  <span id="last-saved-global" style="font-size:11px;color:#555;margin-left:auto"></span>
+</div>
+<div id="tabs"></div>
+<div id="panels-wrap"></div>
+<div id="print-report"></div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <div id="lb-inner">
+    <button id="lb-close" onclick="closeLightbox()">✕</button>
+    <div id="lb-hdr" style="font-size:15px;font-weight:bold;margin-bottom:4px"></div>
+    <div id="lb-meta" style="font-size:12px;color:#aaa;margin-bottom:10px"></div>
+    <div id="lb-imgs-wrap" style="position:relative">
+      <div id="lb-imgs"></div>
+      <canvas id="lb-canvas"></canvas>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      <button onclick="setLbTool('circle')" id="lb-btn-circle" class="annot-btn">⬤ Circle</button>
+      <button onclick="setLbTool('rect')" id="lb-btn-rect" class="annot-btn">▬ Box</button>
+      <button onclick="setLbTool('arrow')" id="lb-btn-arrow" class="annot-btn">➜ Arrow</button>
+      <button onclick="lbUndo()" class="annot-btn">↩ Undo</button>
+      <button onclick="lbRedo()" class="annot-btn">↪ Redo</button>
+      <button onclick="clearLbAnnotations()" class="annot-btn" style="background:#5a1a1a">✕ Clear</button>
+    </div>
+    <div style="margin-top:12px">
+      <label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px">OBSERVATION CATEGORY</label>
+      <select id="lb-cat" onchange="onLbCatChange()"
+        style="width:100%;background:#2a2a2a;color:#eee;border:1px solid #444;padding:6px;border-radius:4px">
+        <option value="">Select...</option>
+        <option>Spalling</option><option>Cracking</option><option>Efflorescence</option>
+        <option>Rust Staining</option><option>Missing Mortar</option><option>Exposed Rebar</option>
+        <option>Delamination</option><option>Staining</option><option>Other</option>
+      </select>
+      <input type="text" id="lb-cat-other" placeholder="Describe observation..."
+        style="display:none;width:100%;margin-top:6px;background:#2a2a2a;color:#eee;border:1px solid #444;padding:6px;border-radius:4px;box-sizing:border-box"
+        oninput="onLbCatOtherInput()">
+    </div>
+    <div style="margin-top:10px">
+      <label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px">CONDITION RATING</label>
+      <div style="display:flex;gap:6px">
+        <button onclick="setRatingLb('Safe')" id="lb-btn-safe" class="rating-btn safe-btn">Safe</button>
+        <button onclick="setRatingLb('SWARMP')" id="lb-btn-swarmp" class="rating-btn swarmp-btn">SWARMP</button>
+        <button onclick="setRatingLb('Unsafe')" id="lb-btn-unsafe" class="rating-btn unsafe-btn">Unsafe</button>
+      </div>
+    </div>
+    <textarea id="lb-notes" placeholder="Inspection notes..."
+      style="width:100%;height:80px;background:#2a2a2a;color:#eee;border:1px solid #444;
+      padding:8px;resize:vertical;margin-top:10px;border-radius:4px;box-sizing:border-box"
+      oninput="onLbNotesInput()"></textarea>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
+      <input type="checkbox" id="lb-flag" onchange="onLbFlagChange()">
+      <span>Flag for follow-up</span>
+    </label>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// PROJECT DATA
+// ══════════════════════════════════════════════════════════════════
+const PROJECT_DATA = {
+  project_name: "Meridian Commercial Center",
+  project_number: "DMC-2025-041",
+  address: "340 Commerce Drive",
+  faces: [
+    {
+      face_id: "north", face_label: "North Facade",
+      drawing_w: 1200, drawing_h: 800,
+      // grid: 4 cols × 4 rows — building rect x:80–1120, y:80–720
+      // cols: 80,340,600,860 (w=260 each); rows: 80,240,400,560 (h=160 each)
+      zones: [
+        {zone_id:"n_r0c0",floor_label:"Parapet",bay_label:"N1",hotspot:{x:80,y:80,w:260,h:160}},
+        {zone_id:"n_r0c1",floor_label:"Parapet",bay_label:"N2",hotspot:{x:340,y:80,w:260,h:160}},
+        {zone_id:"n_r0c2",floor_label:"Parapet",bay_label:"N3",hotspot:{x:600,y:80,w:260,h:160}},
+        {zone_id:"n_r0c3",floor_label:"Parapet",bay_label:"N4",hotspot:{x:860,y:80,w:260,h:160}},
+        {zone_id:"n_r1c0",floor_label:"3rd Floor",bay_label:"N1",hotspot:{x:80,y:240,w:260,h:160}},
+        {zone_id:"n_r1c1",floor_label:"3rd Floor",bay_label:"N2",hotspot:{x:340,y:240,w:260,h:160}},
+        {zone_id:"n_r1c2",floor_label:"3rd Floor",bay_label:"N3",hotspot:{x:600,y:240,w:260,h:160}},
+        {zone_id:"n_r1c3",floor_label:"3rd Floor",bay_label:"N4",hotspot:{x:860,y:240,w:260,h:160}},
+        {zone_id:"n_r2c0",floor_label:"2nd Floor",bay_label:"N1",hotspot:{x:80,y:400,w:260,h:160}},
+        {zone_id:"n_r2c1",floor_label:"2nd Floor",bay_label:"N2",hotspot:{x:340,y:400,w:260,h:160}},
+        {zone_id:"n_r2c2",floor_label:"2nd Floor",bay_label:"N3",hotspot:{x:600,y:400,w:260,h:160}},
+        {zone_id:"n_r2c3",floor_label:"2nd Floor",bay_label:"N4",hotspot:{x:860,y:400,w:260,h:160}},
+        {zone_id:"n_r3c0",floor_label:"Ground",bay_label:"N1",hotspot:{x:80,y:560,w:260,h:160}},
+        {zone_id:"n_r3c1",floor_label:"Ground",bay_label:"N2",hotspot:{x:340,y:560,w:260,h:160}},
+        {zone_id:"n_r3c2",floor_label:"Ground",bay_label:"N3",hotspot:{x:600,y:560,w:260,h:160}},
+        {zone_id:"n_r3c3",floor_label:"Ground",bay_label:"N4",hotspot:{x:860,y:560,w:260,h:160}}
+      ]
+    },
+    {
+      face_id: "east", face_label: "East Facade",
+      drawing_w: 1200, drawing_h: 750,
+      // grid: 3 cols × 3 rows — building rect x:80–1100, y:80–680
+      // cols: 80,420,760 (w=340 each); rows: 80,280,480 (h=200 each)
+      zones: [
+        {zone_id:"e_r0c0",floor_label:"3rd Floor",bay_label:"E1",hotspot:{x:80,y:80,w:340,h:200}},
+        {zone_id:"e_r0c1",floor_label:"3rd Floor",bay_label:"E2",hotspot:{x:420,y:80,w:340,h:200}},
+        {zone_id:"e_r0c2",floor_label:"3rd Floor",bay_label:"E3",hotspot:{x:760,y:80,w:340,h:200}},
+        {zone_id:"e_r1c0",floor_label:"2nd Floor",bay_label:"E1",hotspot:{x:80,y:280,w:340,h:200}},
+        {zone_id:"e_r1c1",floor_label:"2nd Floor",bay_label:"E2",hotspot:{x:420,y:280,w:340,h:200}},
+        {zone_id:"e_r1c2",floor_label:"2nd Floor",bay_label:"E3",hotspot:{x:760,y:280,w:340,h:200}},
+        {zone_id:"e_r2c0",floor_label:"Ground",bay_label:"E1",hotspot:{x:80,y:480,w:340,h:200}},
+        {zone_id:"e_r2c1",floor_label:"Ground",bay_label:"E2",hotspot:{x:420,y:480,w:340,h:200}},
+        {zone_id:"e_r2c2",floor_label:"Ground",bay_label:"E3",hotspot:{x:760,y:480,w:340,h:200}}
+      ]
+    }
+  ]
+};
+
+// ══════════════════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════════════════
+const CATEGORY_COLORS = {
+  "Spalling":"#ff6b6b","Cracking":"#ffa500","Efflorescence":"#a0c4ff",
+  "Rust Staining":"#cd7f32","Missing Mortar":"#ffff66","Exposed Rebar":"#ff4444",
+  "Delamination":"#ff69b4","Staining":"#9b59b6","Other":"#ffff00"
+};
+const FISP_CATEGORIES = Object.keys(CATEGORY_COLORS);
+const DEMO_DEFECT_TYPE = {
+  "north|n_r1c1":"crack","north|n_r2c2":"spalling",
+  "north|n_r3c0":"efflorescence","north|n_r0c3":"stain","east|e_r1c1":"mortar"
+};
+
+// ══════════════════════════════════════════════════════════════════
+// PLACEHOLDER IMAGE GENERATION
+// ══════════════════════════════════════════════════════════════════
+const IMG_CACHE = {};
+
+function getImg(fid, zid, type) {
+  const key = fid+'|'+zid+'|'+type;
+  if (!IMG_CACHE[key]) {
+    const defect = DEMO_DEFECT_TYPE[fid+'|'+zid] || null;
+    const zone = PROJECT_DATA.faces.find(f=>f.face_id===fid)?.zones.find(z=>z.zone_id===zid);
+    const label = (zone?.floor_label||'') + ' / ' + (zone?.bay_label||'');
+    IMG_CACHE[key] = type==='rgb' ? makeRGB(label, defect) : makeThermal(label, defect);
+  }
+  return IMG_CACHE[key];
+}
+
+function makeRGB(label, defect) {
+  const c=document.createElement('canvas'); c.width=640; c.height=480;
+  const ctx=c.getContext('2d');
+  // Brick field
+  ctx.fillStyle='#b0a090'; ctx.fillRect(0,0,640,480);
+  for(let row=0; row*28<480; row++) {
+    const off=(row%2)*44;
+    ctx.fillStyle=row%3===0?'#a89880':row%3===1?'#b0a090':'#a89070';
+    for(let x=-off; x<640; x+=88) {
+      ctx.fillRect(x+1, row*28+1, 86, 26);
+    }
+  }
+  // Mortar lines
+  ctx.strokeStyle='#c8bfb0'; ctx.lineWidth=2;
+  for(let row=0;row*28<480;row++){ctx.beginPath();ctx.moveTo(0,row*28);ctx.lineTo(640,row*28);ctx.stroke();}
+  // Window openings (dark recesses)
+  ctx.fillStyle='#1a1820';
+  [[160,160,120,180],[380,160,120,180]].forEach(([x,y,w,h])=>{
+    ctx.fillRect(x,y,w,h);
+    ctx.fillStyle='rgba(255,255,255,.07)'; ctx.fillRect(x,y,w,6); ctx.fillRect(x,y,4,h);
+    ctx.fillStyle='#1a1820';
+  });
+  // Defect visual
+  if(defect==='crack'){
+    ctx.strokeStyle='rgba(80,60,40,.9)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(310,140); ctx.lineTo(316,180); ctx.lineTo(308,240); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(316,180); ctx.lineTo(330,195); ctx.stroke();
+  } else if(defect==='spalling') {
+    ctx.fillStyle='rgba(60,40,20,.8)';
+    [[295,130,40,30],[310,155,50,25],[290,175,35,20]].forEach(([x,y,w,h])=>ctx.fillRect(x,y,w,h));
+    ctx.fillStyle='rgba(200,180,150,.6)';
+    [[298,133,15,10],[314,158,20,12]].forEach(([x,y,w,h])=>ctx.fillRect(x,y,w,h));
+  } else if(defect==='efflorescence') {
+    ctx.fillStyle='rgba(240,238,230,.7)';
+    for(let i=0;i<6;i++) ctx.fillRect(180+i*18,60+i*12,30+i*4,20);
+  } else if(defect==='stain') {
+    const rg=ctx.createRadialGradient(320,180,10,320,180,90);
+    rg.addColorStop(0,'rgba(100,80,60,.5)'); rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg; ctx.fillRect(0,0,640,480);
+  } else if(defect==='mortar') {
+    // Window head = brick courses just above the window opening (y<160)
+    // ~2 linear feet centered on the left window (x:160–280), staying in brick
+    ctx.strokeStyle='rgba(180,160,130,.85)'; ctx.lineWidth=3;
+    [148,156].forEach(y=>{ctx.beginPath();ctx.moveTo(148,y);ctx.lineTo(298,y);ctx.stroke();});
+  }
+  // Label bar
+  ctx.fillStyle='rgba(0,0,0,.72)'; ctx.fillRect(0,446,640,34);
+  ctx.fillStyle='#d0d8e8'; ctx.font='bold 13px monospace'; ctx.textAlign='center';
+  ctx.fillText('RGB / '+label, 320, 468);
+  return c.toDataURL('image/jpeg', 0.82);
+}
+
+function makeThermal(label, defect) {
+  const c=document.createElement('canvas'); c.width=640; c.height=480;
+  const ctx=c.getContext('2d');
+  // Cold wall base
+  const bg=ctx.createLinearGradient(0,0,0,480);
+  bg.addColorStop(0,'#1a3a5c'); bg.addColorStop(.5,'#0e3050'); bg.addColorStop(1,'#0c2840');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,640,480);
+  // Structural variation (cooler at columns, warmer at center)
+  const vg=ctx.createLinearGradient(0,0,640,0);
+  vg.addColorStop(0,'rgba(0,0,40,.3)'); vg.addColorStop(.5,'rgba(20,20,0,.1)'); vg.addColorStop(1,'rgba(0,0,40,.3)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,640,480);
+  // Windows — near-black with cool purple tint (N/E glass reflects cold ambient sky)
+  [[160,160,120,180],[380,160,120,180]].forEach(([x,y,w,h])=>{
+    ctx.fillStyle='rgba(5,0,30,.82)'; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle='rgba(60,20,120,.3)'; ctx.fillRect(x,y,w,Math.round(h*.35));
+  });
+  // Thermal defect areas
+  if(defect==='crack') {
+    // Shaded N/E face — cracking has minimal thermal signature. No anomaly shown.
+  } else if(defect==='spalling') {
+    // Mild cool mottling on affected brick area — no hot spot
+    ctx.fillStyle='rgba(0,0,0,.28)'; ctx.fillRect(285,125,75,85);
+    ctx.fillStyle='rgba(0,0,0,.18)'; ctx.fillRect(298,133,45,25); ctx.fillRect(308,160,55,22);
+  } else if(defect==='efflorescence') {
+    // Subtle cool patch on brick below window — evaporative moisture signature
+    const rg=ctx.createRadialGradient(215,265,4,215,265,52);
+    rg.addColorStop(0,'rgba(0,0,0,.32)'); rg.addColorStop(.6,'rgba(0,0,0,.12)'); rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg; ctx.fillRect(0,0,640,480);
+  } else if(defect==='mortar') {
+    // Same 2-foot span above the window head — slight warm blush where mortar is missing
+    [148,156].forEach(y=>{
+      const rg=ctx.createLinearGradient(148,y,298,y);
+      rg.addColorStop(0,'rgba(255,200,50,.2)'); rg.addColorStop(.5,'rgba(255,200,50,.55)'); rg.addColorStop(1,'rgba(255,200,50,.2)');
+      ctx.fillStyle=rg; ctx.fillRect(148,y-3,150,8);
+    });
+  }
+  // False color contours (subtle)
+  ctx.strokeStyle='rgba(0,180,255,.12)'; ctx.lineWidth=1;
+  for(let y=40;y<440;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(640,y);ctx.stroke();}
+  // Label
+  ctx.fillStyle='rgba(0,0,0,.72)'; ctx.fillRect(0,446,640,34);
+  ctx.fillStyle='#a8d8f8'; ctx.font='bold 13px monospace'; ctx.textAlign='center';
+  ctx.fillText('THERMAL / '+label, 320, 468);
+  return c.toDataURL('image/jpeg', 0.82);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ELEVATION DRAWING GENERATION
+// ══════════════════════════════════════════════════════════════════
+function buildElevSVG(face) {
+  const W=face.drawing_w, H=face.drawing_h;
+  const fid=face.face_id;
+  const zones=face.zones;
+  // Collect unique col/row boundaries from hotspots
+  const xs=new Set(), ys=new Set();
+  zones.forEach(z=>{xs.add(z.hotspot.x);xs.add(z.hotspot.x+z.hotspot.w);ys.add(z.hotspot.y);ys.add(z.hotspot.y+z.hotspot.h);});
+  const cols=[...xs].sort((a,b)=>a-b);
+  const rows=[...ys].sort((a,b)=>a-b);
+  const nCols=cols.length-1, nRows=rows.length-1;
+  const bx=cols[0], bx2=cols[cols.length-1];
+  const by=rows[0], by2=rows[rows.length-1];
+  const bw=bx2-bx, bh=by2-by;
+
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+<rect width="${W}" height="${H}" fill="#f3f1eb"/>
+<rect x="6" y="6" width="${W-12}" height="${H-12}" fill="none" stroke="#bbb" stroke-width="1"/>
+<text x="${W/2}" y="38" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#111" letter-spacing="0.5">${face.face_label.toUpperCase()} / MERIDIAN COMMERCIAL CENTER</text>
+<text x="${W-22}" y="38" text-anchor="end" font-family="Arial,Helvetica,sans-serif" font-size="10" fill="#666">DMC-2025-041 | Rev 0</text>
+<text x="22" y="${H-12}" font-family="Arial,Helvetica,sans-serif" font-size="10" fill="#888">SCALE: NTS</text>
+<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#e8e4da" stroke="#1a1a1a" stroke-width="2"/>`;
+
+  // Grid lines
+  for(let i=1;i<cols.length-1;i++)
+    s+=`\n<line x1="${cols[i]}" y1="${by}" x2="${cols[i]}" y2="${by2}" stroke="#555" stroke-width="1" stroke-dasharray="5,4"/>`;
+  for(let i=1;i<rows.length-1;i++)
+    s+=`\n<line x1="${bx}" y1="${rows[i]}" x2="${bx2}" y2="${rows[i]}" stroke="#555" stroke-width="1" stroke-dasharray="5,4"/>`;
+
+  // Parapet coping (top row only for north facade)
+  if(fid==='north') {
+    const par_y=rows[rows.length-2];
+    s+=`\n<rect x="${bx}" y="${par_y}" width="${bw}" height="12" fill="#ccc5ad" stroke="#666" stroke-width="1"/>`;
+    s+=`\n<line x1="${bx-3}" y1="${par_y+12}" x2="${bx2+3}" y2="${par_y+12}" stroke="#777" stroke-width="1.5"/>`;
+  }
+
+  // Windows in each non-parapet cell
+  for(let r=0;r<nRows;r++) {
+    if(fid==='north' && r===nRows-1) continue; // parapet, no windows
+    const cy=rows[r], ch=rows[r+1]-rows[r];
+    for(let c=0;c<nCols;c++) {
+      const cx=cols[c], cw=cols[c+1]-cols[c];
+      const nWins=nCols<=3?2:2; // 2 windows per bay
+      const ww=Math.round(cw*0.27), wh=Math.round(ch*0.5);
+      const gap=Math.round((cw-nWins*ww)/(nWins+1));
+      const wy=cy+Math.round((ch-wh)/2);
+      for(let w=0;w<nWins;w++) {
+        const wx=cx+gap+w*(ww+gap);
+        s+=`\n<rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" fill="#b8ccd8" stroke="#3a4a55" stroke-width="1.5"/>`;
+        const hw=Math.round((wh-8)/2)-1;
+        s+=`\n<rect x="${wx+4}" y="${wy+4}" width="${ww-8}" height="${hw}" fill="#9ab8ca" stroke="none"/>`;
+        s+=`\n<rect x="${wx+4}" y="${wy+4+hw+2}" width="${ww-8}" height="${hw}" fill="#9ab8ca" stroke="none"/>`;
+      }
+    }
+  }
+
+  // Bay labels (bottom)
+  const baySet={};
+  zones.forEach(z=>{const k=z.hotspot.x; if(!baySet[k]) baySet[k]={x:z.hotspot.x,w:z.hotspot.w,label:z.bay_label};});
+  Object.values(baySet).forEach(b=>{
+    s+=`\n<text x="${b.x+b.w/2}" y="${by2+20}" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11" fill="#333" font-weight="bold">${b.label}</text>`;
+  });
+
+  // Floor labels (left)
+  const floorSet={};
+  zones.forEach(z=>{const k=z.hotspot.y; if(!floorSet[k]) floorSet[k]={y:z.hotspot.y,h:z.hotspot.h,label:z.floor_label};});
+  Object.values(floorSet).forEach(f=>{
+    s+=`\n<text x="${bx-10}" y="${f.y+f.h/2+4}" text-anchor="end" font-family="Arial,Helvetica,sans-serif" font-size="11" fill="#333" font-weight="bold">${f.label}</text>`;
+  });
+
+  s+='\n</svg>';
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+let annotationState = {};
+let activeFace = null, activeZone = null;
+let lastSavedTime = null;
+const zoomState = {};
+
+const DEMO_ANNOTATIONS = {
+  north: {
+    n_r1c1: { rating:"SWARMP", category:"Cracking", categoryOther:"", flag:false,
+      notes:"Hairline crack vertical through mortar joint at 3rd floor sill line, approx. 18\". No efflorescence present. Thermal imaging did not identify moisture infiltration at this location. Monitor for progression.",
+      annotations:[{type:"circle",x1:258,y1:152,x2:388,y2:268}] },
+    n_r2c2: { rating:"Unsafe", category:"Spalling", categoryOther:"", flag:true,
+      notes:"Active spalling on 2nd floor masonry surface. Loose 4\"×6\" section. Requires remediation before next cycle. Engineer review required.",
+      annotations:[{type:"rect",x1:228,y1:118,x2:418,y2:276}] },
+    n_r3c0: { rating:"SWARMP", category:"Efflorescence", categoryOther:"", flag:false,
+      notes:"White mineral deposit pattern consistent with ground moisture infiltration through masonry. Review foundation drainage at grade.",
+      annotations:[] },
+    n_r0c3: { rating:"Safe", category:"Staining", categoryOther:"", flag:false,
+      notes:"Weathering stain below coping line. No cracking or spalling. Document for long-term trend monitoring.",
+      annotations:[] }
+  },
+  east: {
+    e_r1c1: { rating:"SWARMP", category:"Missing Mortar", categoryOther:"", flag:false,
+      notes:"Mortar joint deterioration at window head, approx. 2–3 linear feet affected. Pointed 2018 per client records; repointing likely required.",
+      annotations:[{type:"arrow",x1:168,y1:272,x2:306,y2:196}] }
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════
+// FACE PANEL BUILDER
+// ══════════════════════════════════════════════════════════════════
+function buildUI() {
+  const tabsEl = document.getElementById('tabs');
+  const wrap = document.getElementById('panels-wrap');
+  tabsEl.innerHTML = ''; wrap.innerHTML = '';
+
+  PROJECT_DATA.faces.forEach((face, fi) => {
+    const fid = face.face_id;
+    zoomState[fid] = {scale:1, tx:0, ty:0, dragging:false, last:null};
+    annotationState[fid] = {};
+    face.zones.forEach(z => {
+      const demo = DEMO_ANNOTATIONS[fid]?.[z.zone_id];
+      annotationState[fid][z.zone_id] = demo
+        ? JSON.parse(JSON.stringify(demo))
+        : {notes:'', flag:false, rating:'', category:'', categoryOther:'', annotations:[]};
+    });
+
+    // Tab button
+    const tb = document.createElement('button');
+    tb.className = 'tab-btn' + (fi===0?' active':'');
+    tb.dataset.faceid = fid;
+    tb.textContent = face.face_label;
+    tb.onclick = () => switchFace(fid);
+    tabsEl.appendChild(tb);
+
+    // Zone rects for SVG
+    const dw = face.drawing_w, dh = face.drawing_h;
+    const zoneRects = face.zones.map(z => {
+      const h = z.hotspot;
+      const cnt = DEMO_ANNOTATIONS[fid]?.[z.zone_id] ? 1 : 0;
+      const hasDemo = !!DEMO_ANNOTATIONS[fid]?.[z.zone_id];
+      const color = hasDemo ? '#30a080' : '#ffcc00';
+      const bx=h.x+h.w-20, by=h.y+4;
+      return `<rect x="${h.x}" y="${h.y}" width="${h.w}" height="${h.h}"
+        fill="${color}" fill-opacity="0.32" stroke="#fff" stroke-width="1" cursor="pointer"
+        data-face="${fid}" data-zone="${z.zone_id}">
+        <title>${z.floor_label} / ${z.bay_label}</title></rect>
+      ${hasDemo?`<rect x="${bx}" y="${by}" width="16" height="14" rx="2" fill="rgba(0,0,0,.6)" pointer-events="none"/>
+        <text x="${bx+8}" y="${by+11}" text-anchor="middle" font-size="10" fill="#fff" pointer-events="none">✓</text>`:''}`
+    }).join('\n');
+
+    // Panel HTML
+    const panel = document.createElement('div');
+    panel.id = 'panel-'+fid;
+    panel.className = 'face-panel';
+    panel.style.display = fi===0 ? 'flex' : 'none';
+    panel.style.flex = '1';
+    panel.style.overflow = 'hidden';
+    panel.innerHTML = `
+<div class="face-inner" style="display:flex;height:100%;overflow:hidden">
+  <div id="dc-${fid}" class="drawing-container" style="flex-basis:65%;position:relative;overflow:hidden">
+    <img id="di-${fid}" src="" style="width:100%;height:100%;object-fit:contain;display:block"
+      onload="alignSvg('${fid}');setTimeout(()=>alignSvg('${fid}'),200)">
+    <svg id="sv-${fid}" style="position:absolute;top:0;left:0;pointer-events:all"
+      viewBox="0 0 ${dw} ${dh}" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="ah-${fid}" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+          <polygon points="0 0,6 2,0 4" fill="#ffff00"/>
+        </marker>
+      </defs>
+      ${zoneRects}
+    </svg>
+  </div>
+  <div id="np-${fid}" class="notes-panel">
+    <div id="nh-${fid}" style="font-weight:bold;font-size:14px;border-bottom:1px solid #333;padding-bottom:8px">Select a zone</div>
+    <div>
+      <label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px">CONDITION RATING</label>
+      <div style="display:flex;gap:6px">
+        <button onclick="setRating('${fid}','Safe')" id="bs-${fid}" class="rating-btn safe-btn">Safe</button>
+        <button onclick="setRating('${fid}','SWARMP')" id="bw-${fid}" class="rating-btn swarmp-btn">SWARMP</button>
+        <button onclick="setRating('${fid}','Unsafe')" id="bu-${fid}" class="rating-btn unsafe-btn">Unsafe</button>
+      </div>
+    </div>
+    <div>
+      <label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px">OBSERVATION CATEGORY</label>
+      <select id="cs-${fid}" onchange="onCatChange('${fid}')"
+        style="width:100%;background:#2a2a2a;color:#eee;border:1px solid #444;padding:6px;border-radius:4px">
+        <option value="">Select...</option>
+        ${FISP_CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('')}
+      </select>
+      <input type="text" id="co-${fid}" placeholder="Describe observation..."
+        style="display:none;width:100%;margin-top:6px;background:#2a2a2a;color:#eee;border:1px solid #444;padding:6px;border-radius:4px;box-sizing:border-box"
+        oninput="onCatOtherInput('${fid}')">
+    </div>
+    <div>
+      <label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px">NOTES</label>
+      <textarea id="nt-${fid}" placeholder="Inspection notes..."
+        style="width:100%;height:120px;background:#2a2a2a;color:#eee;border:1px solid #444;padding:8px;box-sizing:border-box;resize:vertical;border-radius:4px"
+        oninput="onNotesInput('${fid}')"></textarea>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="fl-${fid}" onchange="onFlagChange('${fid}')">
+      <span style="font-size:13px">Flag for follow-up</span>
+    </label>
+    <div id="ls-${fid}" style="font-size:11px;color:#555;margin-top:auto;padding-top:8px;border-top:1px solid #222"></div>
+  </div>
+</div>`;
+    wrap.appendChild(panel);
+
+    // Set drawing image src
+    document.getElementById('di-'+fid).src = buildElevSVG(face);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// VIEWER LOGIC
+// ══════════════════════════════════════════════════════════════════
+function alignSvg(fid) {
+  const img=document.getElementById('di-'+fid);
+  const svg=document.getElementById('sv-'+fid);
+  if(!img||!svg) return;
+  const r=img.getBoundingClientRect();
+  const cr=img.parentElement.getBoundingClientRect();
+  if(r.width===0||r.height===0){setTimeout(()=>alignSvg(fid),100);return;}
+  svg.style.left=(r.left-cr.left)+'px'; svg.style.top=(r.top-cr.top)+'px';
+  svg.style.width=r.width+'px'; svg.style.height=r.height+'px';
+}
+
+function switchFace(fid) {
+  document.querySelectorAll('.face-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('panel-'+fid);
+  if(panel) panel.style.display='flex';
+  document.querySelectorAll('.tab-btn').forEach(b=>{if(b.dataset.faceid===fid) b.classList.add('active');});
+  activeFace=fid; activeZone=null;
+  refreshPanel();
+  setTimeout(()=>{
+    alignSvg(fid);
+    wireZoom(fid);
+    document.querySelectorAll(`#sv-${fid} rect[data-zone]`).forEach(r=>{
+      const handleZoneClick = () => openLightbox(r.dataset.face, r.dataset.zone);
+      r.onclick = handleZoneClick;
+      r.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleZoneClick();
+      }, {passive: false});
+    });
+  },60);
+}
+
+function refreshPanel() {
+  if(!activeFace) return;
+  const face=PROJECT_DATA.faces.find(f=>f.face_id===activeFace);
+  const zone=face?.zones.find(z=>z.zone_id===activeZone);
+  const hdr=document.getElementById('nh-'+activeFace);
+  const ta=document.getElementById('nt-'+activeFace);
+  const fl=document.getElementById('fl-'+activeFace);
+  const cs=document.getElementById('cs-'+activeFace);
+  const co=document.getElementById('co-'+activeFace);
+  if(!zone){
+    if(hdr) hdr.textContent='Select a zone';
+    if(ta){ta.value='';ta.disabled=true;}
+    if(fl) fl.checked=false;
+    if(cs) cs.value='';
+    if(co) co.style.display='none';
+    updateRatingBtns(activeFace,'');
+    return;
+  }
+  const st=annotationState[activeFace]?.[activeZone]||{};
+  const fl2=zone.floor_label||'', bl=zone.bay_label||'';
+  if(hdr) hdr.textContent=(fl2&&bl)?fl2+' / '+bl:(fl2||bl||zone.zone_id);
+  if(ta){ta.value=st.notes||'';ta.disabled=false;}
+  if(fl) fl.checked=st.flag||false;
+  if(cs){
+    cs.value=st.category||'';
+    const isOther=st.category==='Other';
+    if(co){co.style.display=isOther?'block':'none';co.value=st.categoryOther||'';}
+  }
+  updateRatingBtns(activeFace, st.rating||'');
+  if(lastSavedTime){const el=document.getElementById('ls-'+activeFace);if(el) el.textContent='Last saved: '+lastSavedTime;}
+}
+
+function updateRatingBtns(fid, rating) {
+  const map={Safe:'bs',SWARMP:'bw',Unsafe:'bu'};
+  Object.entries(map).forEach(([r,pfx])=>{
+    const btn=document.getElementById(pfx+'-'+fid);
+    if(btn) btn.classList.toggle('active',r===rating);
+  });
+}
+
+function setRating(fid, rating) {
+  if(!activeZone||activeFace!==fid) return;
+  const st=annotationState[fid]?.[activeZone]; if(!st) return;
+  st.rating=(st.rating===rating)?'':rating;
+  updateRatingBtns(fid,st.rating);
+}
+
+function onCatChange(fid) {
+  if(!activeZone||activeFace!==fid) return;
+  const sel=document.getElementById('cs-'+fid);
+  const oth=document.getElementById('co-'+fid);
+  const st=annotationState[fid]?.[activeZone]; if(!st) return;
+  st.category=sel.value;
+  const isOther=sel.value==='Other';
+  if(oth) oth.style.display=isOther?'block':'none';
+  if(!isOther) st.categoryOther='';
+}
+function onCatOtherInput(fid){
+  const st=annotationState[fid]?.[activeZone];
+  if(st) st.categoryOther=document.getElementById('co-'+fid).value;
+}
+function onNotesInput(fid){
+  const st=annotationState[fid]?.[activeZone];
+  if(st) st.notes=document.getElementById('nt-'+fid).value;
+}
+function onFlagChange(fid){
+  const st=annotationState[fid]?.[activeZone];
+  if(st) st.flag=document.getElementById('fl-'+fid).checked;
+}
+
+// ── Zoom / Pan ──
+function wireZoom(fid) {
+  const container=document.getElementById('dc-'+fid);
+  if(!container||container._zoomWired) return;
+  container._zoomWired=true;
+  const zs=zoomState[fid];
+  const zc=document.createElement('div');
+  zc.className='zoom-controls';
+  zc.innerHTML=`<button onclick="zoom('${fid}',1.25)" title="Zoom in">+</button>
+    <button onclick="zoom('${fid}',0.8)" title="Zoom out">−</button>
+    <button onclick="resetZoom('${fid}')" title="Reset" style="font-size:11px">⟳</button>`;
+  container.appendChild(zc);
+  container.addEventListener('wheel',e=>{e.preventDefault();zoom(fid,e.deltaY<0?1.1:0.9);},{passive:false});
+  container.addEventListener('mousedown',e=>{
+    if(e.button!==1&&!(e.button===0&&e.altKey)) return;
+    e.preventDefault(); zs.dragging=true; zs.last={x:e.clientX,y:e.clientY};
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!zs.dragging) return;
+    zs.tx+=e.clientX-zs.last.x; zs.ty+=e.clientY-zs.last.y;
+    zs.last={x:e.clientX,y:e.clientY}; applyZoom(fid);
+  });
+  window.addEventListener('mouseup',()=>zs.dragging=false);
+  let lt=null;
+  container.addEventListener('touchstart',e=>{lt=e.touches;e.preventDefault();},{passive:false});
+  container.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&lt?.length===1){
+      zs.tx+=e.touches[0].clientX-lt[0].clientX;
+      zs.ty+=e.touches[0].clientY-lt[0].clientY;
+    } else if(e.touches.length===2&&lt?.length===2){
+      const d1=Math.hypot(lt[0].clientX-lt[1].clientX,lt[0].clientY-lt[1].clientY);
+      const d2=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      if(d1>0) zs.scale=Math.min(8,Math.max(0.5,zs.scale*d2/d1));
+    }
+    lt=e.touches; applyZoom(fid);
+  },{passive:false});
+}
+function zoom(fid,f){const zs=zoomState[fid];zs.scale=Math.min(8,Math.max(0.5,zs.scale*f));applyZoom(fid);}
+function resetZoom(fid){const zs=zoomState[fid];zs.scale=1;zs.tx=0;zs.ty=0;applyZoom(fid);}
+function applyZoom(fid){
+  const img=document.getElementById('di-'+fid); if(!img) return;
+  const zs=zoomState[fid];
+  img.style.transform=`translate(${zs.tx}px,${zs.ty}px) scale(${zs.scale})`;
+  img.style.transformOrigin='center center';
+  alignSvg(fid);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// LIGHTBOX
+// ══════════════════════════════════════════════════════════════════
+function openLightbox(fid, zid) {
+  activeFace=fid; activeZone=zid; refreshPanel();
+  const face=PROJECT_DATA.faces.find(f=>f.face_id===fid);
+  const zone=face?.zones.find(z=>z.zone_id===zid); if(!zone) return;
+  const fl=zone.floor_label||'', bl=zone.bay_label||'';
+  document.getElementById('lb-hdr').textContent=(fl&&bl)?fl+' / '+bl:(fl||bl||zid);
+  const st=annotationState[fid]?.[zid]||{};
+  const meta=[];
+  if(st.rating) meta.push(st.rating);
+  if(st.category) meta.push(st.category==='Other'?(st.categoryOther||'Other'):st.category);
+  document.getElementById('lb-meta').textContent=meta.join(' · ');
+  // Images
+  const imgs=document.getElementById('lb-imgs'); imgs.innerHTML='';
+  const rgb=document.createElement('img'); rgb.src=getImg(fid,zid,'rgb'); rgb.alt='RGB'; imgs.appendChild(rgb);
+  const th=document.createElement('img'); th.src=getImg(fid,zid,'thermal'); th.alt='Thermal'; imgs.appendChild(th);
+  // Rating/cat/notes
+  const lbCat=document.getElementById('lb-cat');
+  lbCat.value=st.category||'';
+  const lbOther=document.getElementById('lb-cat-other');
+  lbOther.style.display=st.category==='Other'?'block':'none';
+  lbOther.value=st.categoryOther||'';
+  updateLbRatingBtns(st.rating||'');
+  document.getElementById('lb-notes').value=st.notes||'';
+  document.getElementById('lb-flag').checked=st.flag||false;
+  document.getElementById('lightbox').classList.add('open');
+  // Canvas — delay until images are positioned
+  setTimeout(()=>{ sizeLbCanvas(); wireLbCanvas(); lbAnnotations=JSON.parse(JSON.stringify(st.annotations||[])); lbUndoStack=[]; lbRedoStack=[]; redrawLbCanvas(); },120);
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+function setRatingLb(r){
+  if(!activeFace||!activeZone) return;
+  const st=annotationState[activeFace]?.[activeZone]; if(!st) return;
+  st.rating=(st.rating===r)?'':r;
+  updateLbRatingBtns(st.rating);
+  updateRatingBtns(activeFace,st.rating);
+  document.getElementById('lb-meta').textContent=[st.rating,st.category&&st.category!=='Other'?st.category:(st.categoryOther||st.category)].filter(Boolean).join(' · ');
+}
+function updateLbRatingBtns(r){
+  ['lb-btn-safe','lb-btn-swarmp','lb-btn-unsafe'].forEach((id,i)=>{
+    const btn=document.getElementById(id); if(btn) btn.classList.toggle('active',['Safe','SWARMP','Unsafe'][i]===r);
+  });
+}
+function onLbCatChange(){
+  if(!activeFace||!activeZone) return;
+  const st=annotationState[activeFace]?.[activeZone]; if(!st) return;
+  const v=document.getElementById('lb-cat').value;
+  st.category=v;
+  const isOther=v==='Other';
+  document.getElementById('lb-cat-other').style.display=isOther?'block':'none';
+  if(!isOther) st.categoryOther='';
+  redrawLbCanvas();
+}
+function onLbCatOtherInput(){
+  const st=annotationState[activeFace]?.[activeZone];
+  if(st) st.categoryOther=document.getElementById('lb-cat-other').value;
+}
+function onLbNotesInput(){
+  const st=annotationState[activeFace]?.[activeZone];
+  if(st){st.notes=document.getElementById('lb-notes').value;const ta=document.getElementById('nt-'+activeFace);if(ta)ta.value=st.notes;}
+}
+function onLbFlagChange(){
+  const st=annotationState[activeFace]?.[activeZone];
+  if(st){st.flag=document.getElementById('lb-flag').checked;const cb=document.getElementById('fl-'+activeFace);if(cb)cb.checked=st.flag;}
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CANVAS ANNOTATIONS
+// ══════════════════════════════════════════════════════════════════
+let lbTool=null, lbAnnotations=[], lbUndoStack=[], lbRedoStack=[], lbDrawing=false, lbSX, lbSY;
+
+function setLbTool(tool){
+  lbTool=(lbTool===tool)?null:tool;
+  ['circle','rect','arrow'].forEach(t=>{
+    const b=document.getElementById('lb-btn-'+t); if(b) b.classList.toggle('active',t===lbTool);
+  });
+}
+function getLbCanvas(){return document.getElementById('lb-canvas');}
+function sizeLbCanvas(){
+  const imgs=document.querySelectorAll('#lb-imgs img'); if(!imgs.length) return;
+  const canvas=getLbCanvas(); if(!canvas) return;
+  const wrap=document.getElementById('lb-imgs-wrap');
+  const wr=wrap.getBoundingClientRect();
+  const ir=document.getElementById('lb-imgs').getBoundingClientRect();
+  canvas.style.position='absolute';
+  canvas.style.left='0px'; canvas.style.top='0px';
+  canvas.width=ir.width; canvas.height=Math.max(...Array.from(imgs).map(i=>i.getBoundingClientRect().height||200));
+  canvas.style.width=ir.width+'px'; canvas.style.height=canvas.height+'px';
+}
+function getCategoryColor(){
+  const st=annotationState[activeFace]?.[activeZone];
+  return CATEGORY_COLORS[st?.category]||'#ffff00';
+}
+function redrawLbCanvas(){
+  const canvas=getLbCanvas(); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const color=getCategoryColor();
+  lbAnnotations.forEach(a=>drawAnnot(ctx,a,color));
+}
+function drawAnnot(ctx,a,color){
+  ctx.strokeStyle=color; ctx.lineWidth=3; ctx.fillStyle='transparent';
+  if(a.type==='circle'){
+    ctx.beginPath();
+    ctx.ellipse((a.x1+a.x2)/2,(a.y1+a.y2)/2,Math.max(1,Math.abs(a.x2-a.x1)/2),Math.max(1,Math.abs(a.y2-a.y1)/2),0,0,Math.PI*2);
+    ctx.stroke();
+  } else if(a.type==='rect'){
+    ctx.strokeRect(Math.min(a.x1,a.x2),Math.min(a.y1,a.y2),Math.abs(a.x2-a.x1),Math.abs(a.y2-a.y1));
+  } else if(a.type==='arrow'){
+    const dx=a.x2-a.x1,dy=a.y2-a.y1,angle=Math.atan2(dy,dx),len=Math.hypot(dx,dy),hl=Math.min(20,len*.3);
+    ctx.beginPath();
+    ctx.moveTo(a.x1,a.y1); ctx.lineTo(a.x2,a.y2);
+    ctx.lineTo(a.x2-hl*Math.cos(angle-Math.PI/6),a.y2-hl*Math.sin(angle-Math.PI/6));
+    ctx.moveTo(a.x2,a.y2);
+    ctx.lineTo(a.x2-hl*Math.cos(angle+Math.PI/6),a.y2-hl*Math.sin(angle+Math.PI/6));
+    ctx.stroke();
+  }
+}
+function wireLbCanvas(){
+  const canvas=getLbCanvas(); if(!canvas||canvas._wired) return;
+  canvas._wired=true;
+  canvas.addEventListener('mousedown',e=>{
+    if(!lbTool) return; lbDrawing=true;
+    const r=canvas.getBoundingClientRect(); lbSX=e.clientX-r.left; lbSY=e.clientY-r.top;
+  });
+  canvas.addEventListener('mousemove',e=>{
+    if(!lbDrawing) return;
+    const r=canvas.getBoundingClientRect();
+    redrawLbCanvas();
+    drawAnnot(canvas.getContext('2d'),{type:lbTool,x1:lbSX,y1:lbSY,x2:e.clientX-r.left,y2:e.clientY-r.top},getCategoryColor());
+  });
+  canvas.addEventListener('mouseup',e=>{
+    if(!lbDrawing) return; lbDrawing=false;
+    const r=canvas.getBoundingClientRect();
+    const annot={type:lbTool,x1:lbSX,y1:lbSY,x2:e.clientX-r.left,y2:e.clientY-r.top};
+    lbUndoStack.push(JSON.parse(JSON.stringify(lbAnnotations))); lbRedoStack=[];
+    lbAnnotations.push(annot);
+    if(activeFace&&activeZone){const st=annotationState[activeFace]?.[activeZone];if(st)st.annotations=JSON.parse(JSON.stringify(lbAnnotations));}
+    redrawLbCanvas();
+  });
+}
+function lbUndo(){
+  if(!lbUndoStack.length) return;
+  lbRedoStack.push(JSON.parse(JSON.stringify(lbAnnotations)));
+  lbAnnotations=JSON.parse(JSON.stringify(lbUndoStack.pop()));
+  if(activeFace&&activeZone){const st=annotationState[activeFace]?.[activeZone];if(st)st.annotations=JSON.parse(JSON.stringify(lbAnnotations));}
+  redrawLbCanvas();
+}
+function lbRedo(){
+  if(!lbRedoStack.length) return;
+  lbUndoStack.push(JSON.parse(JSON.stringify(lbAnnotations)));
+  lbAnnotations=JSON.parse(JSON.stringify(lbRedoStack.pop()));
+  if(activeFace&&activeZone){const st=annotationState[activeFace]?.[activeZone];if(st)st.annotations=JSON.parse(JSON.stringify(lbAnnotations));}
+  redrawLbCanvas();
+}
+function clearLbAnnotations(){
+  lbUndoStack.push(JSON.parse(JSON.stringify(lbAnnotations))); lbRedoStack=[]; lbAnnotations=[];
+  if(activeFace&&activeZone){const st=annotationState[activeFace]?.[activeZone];if(st)st.annotations=[];}
+  redrawLbCanvas();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SAVE / LOAD / EXPORT / PRINT
+// ══════════════════════════════════════════════════════════════════
+function saveAnnotations(){
+  const now=new Date();
+  const ts=now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+String(now.getSeconds()).padStart(2,'0');
+  const payload={project_number:PROJECT_DATA.project_number,project_name:PROJECT_DATA.project_name,saved:now.toISOString(),schema_version:'2',annotations:annotationState};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=PROJECT_DATA.project_number+'_'+PROJECT_DATA.project_name.replace(/\s+/g,'_')+'_annotations_'+ts+'.json';
+  a.click(); lastSavedTime=now.toLocaleTimeString();
+  document.getElementById('last-saved-global').textContent='Last saved: '+lastSavedTime;
+  if(activeFace){const el=document.getElementById('ls-'+activeFace);if(el)el.textContent='Last saved: '+lastSavedTime;}
+}
+function loadAnnotations(event){
+  const file=event.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.project_number!==PROJECT_DATA.project_number){alert('This annotation file is for a different project.');return;}
+      annotationState=data.annotations||{};
+      lastSavedTime=data.saved?new Date(data.saved).toLocaleTimeString():null;
+      document.getElementById('last-saved-global').textContent=lastSavedTime?'Last saved: '+lastSavedTime:'';
+      refreshPanel();
+    }catch(err){alert('Invalid annotation file: '+err.message);}
+  };
+  reader.readAsText(file);
+}
+function exportFlagged(){
+  let lines=['FLAGGED ZONES: '+PROJECT_DATA.project_name+'\n'];
+  PROJECT_DATA.faces.forEach(face=>{
+    face.zones.forEach(z=>{
+      const st=annotationState[face.face_id]?.[z.zone_id]; if(!st?.flag) return;
+      const cat=st.category==='Other'?(st.categoryOther||'Other'):st.category;
+      const annotTxt=(st.annotations||[]).map((a,i)=>`  Annotation ${i+1}: ${a.type} (${Math.round(a.x1)},${Math.round(a.y1)}) to (${Math.round(a.x2)},${Math.round(a.y2)})`).join('\n');
+      lines.push([face.face_label+' / '+(z.floor_label||'')+' / '+(z.bay_label||''),'Rating: '+(st.rating||'none'),'Category: '+(cat||'none'),'Notes: '+(st.notes||'(none)'),annotTxt].filter(Boolean).join('\n')+'\n');
+    });
+  });
+  if(lines.length===1){alert('No zones flagged.');return;}
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flagged_zones.txt'; a.click();
+}
+function exportCSV(){
+  const rows=[['Face','Floor','Bay','Rating','Category','Notes','Flagged','Annotations']];
+  PROJECT_DATA.faces.forEach(face=>{
+    face.zones.forEach(z=>{
+      const st=annotationState[face.face_id]?.[z.zone_id]||{};
+      const cat=st.category==='Other'?(st.categoryOther||'Other'):(st.category||'');
+      const annotTxt=(st.annotations||[]).map(a=>`${a.type}(${Math.round(a.x1)},${Math.round(a.y1)})to(${Math.round(a.x2)},${Math.round(a.y2)})`).join('; ');
+      rows.push([face.face_label,z.floor_label||'',z.bay_label||'',st.rating||'',cat,(st.notes||'').replace(/"/g,'""'),st.flag?'Yes':'No',annotTxt]);
+    });
+  });
+  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='inspection_notes.csv'; a.click();
+}
+function buildPrintReport(){
+  const report=document.getElementById('print-report'); report.innerHTML='';
+  PROJECT_DATA.faces.forEach(face=>{
+    const fid=face.face_id;
+    const dw=face.drawing_w, dh=face.drawing_h;
+    const page=document.createElement('div'); page.className='print-page';
+    const h=document.createElement('h2'); h.textContent=face.face_label; h.style.cssText='margin-bottom:8px;font-size:16px'; page.appendChild(h);
+    const container=document.createElement('div'); container.className='print-grid-container';
+    const img=document.createElement('img'); img.src=document.getElementById('di-'+fid).src; container.appendChild(img);
+    const svgNS='http://www.w3.org/2000/svg';
+    const svg=document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 '+dw+' '+dh); svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+    face.zones.forEach(z=>{
+      const h2=z.hotspot||{}; const st=annotationState[fid]?.[z.zone_id]||{};
+      const fc=st.rating==='Unsafe'?'#ff4444':st.rating==='SWARMP'?'#ffaa00':'#cc3333';
+      const rect=document.createElementNS(svgNS,'rect');
+      rect.setAttribute('x',h2.x||0); rect.setAttribute('y',h2.y||0);
+      rect.setAttribute('width',h2.w||100); rect.setAttribute('height',h2.h||100);
+      rect.setAttribute('fill',fc); rect.setAttribute('fill-opacity','0.35');
+      rect.setAttribute('stroke','#333'); rect.setAttribute('stroke-width','1'); svg.appendChild(rect);
+      const txt=document.createElementNS(svgNS,'text');
+      txt.setAttribute('x',(h2.x||0)+(h2.w||100)/2); txt.setAttribute('y',(h2.y||0)+(h2.h||100)/2);
+      txt.setAttribute('text-anchor','middle'); txt.setAttribute('dominant-baseline','middle');
+      txt.setAttribute('font-size','18'); txt.setAttribute('fill','#fff'); txt.setAttribute('font-weight','bold');
+      txt.textContent=((z.floor_label||'')+' '+(z.bay_label||'')).trim()||z.zone_id; svg.appendChild(txt);
+    });
+    container.appendChild(svg); page.appendChild(container);
+    const noted=face.zones.filter(z=>{const st=annotationState[fid]?.[z.zone_id];return st&&(st.notes||st.flag||st.rating||st.category||(st.annotations&&st.annotations.length));});
+    if(noted.length){
+      const tbl=document.createElement('table'); tbl.className='notes-table';
+      tbl.innerHTML='<thead><tr><th>Floor</th><th>Bay</th><th>Rating</th><th>Category</th><th>Notes</th><th>Flagged</th><th>Annotations</th></tr></thead>';
+      const tbody=document.createElement('tbody');
+      noted.forEach(z=>{
+        const st=annotationState[fid]?.[z.zone_id]||{};
+        const cat=st.category==='Other'?(st.categoryOther||'Other'):(st.category||'');
+        const annotTxt=(st.annotations||[]).map((a,i)=>`${a.type}(${Math.round(a.x1)},${Math.round(a.y1)})→(${Math.round(a.x2)},${Math.round(a.y2)})`).join('; ');
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${z.floor_label||''}</td><td>${z.bay_label||''}</td><td>${st.rating||''}</td><td>${cat}</td><td>${(st.notes||'').replace(/</g,'&lt;')}</td><td>${st.flag?'✓':''}</td><td>${annotTxt}</td>`;
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody); page.appendChild(tbl);
+    }
+    report.appendChild(page);
+  });
+  window.print();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+(function init(){
+  buildUI();
+  if(PROJECT_DATA.faces.length) switchFace(PROJECT_DATA.faces[0].face_id);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape') closeLightbox();});
+  document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox')) closeLightbox();});
+  window.addEventListener('resize',()=>{if(activeFace) alignSvg(activeFace);});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deliverables | Digital Mapping Consultants</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">Digital Mapping Consultants</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="case-study.html">Case Study</a>
+    <a href="viewer.html" class="nav-cta">Interactive Demo</a>
+    <a href="deliverables.html" class="active">Deliverables</a>
+    <a href="why-dmc.html">Why DMC</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">What DMC Produces</div>
+  <h1>Deliverable Types</h1>
+  <p>Each deliverable is designed to function as an engineering input or decision-support tool, not as photography. Format depends on what the receiving engineer
+  or firm will do with it.</p>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-label">Facade Inspection Deliverable Package</div>
+    <p>The full facade inspection package is delivered as a zip file containing:</p>
+
+    <div class="deliv-grid">
+
+      <div class="deliv-card">
+        <h3>Interactive HTML Viewer</h3>
+        <p>Engineering elevation drawing with interactive zone grid. Click any zone to view the
+        RGB and thermal image pair, assign condition rating, add observation category, write
+        notes, draw annotations, and flag for follow-up. Fully offline. No install, no login.</p>
+        <span class="deliv-format">viewer.html</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>RGB Imagery</h3>
+        <p>High-resolution drone imagery captured per face at consistent altitude with overlapping
+        passes. Organized by face and zone. Sized for structural detail visibility at the
+        floor-and-bay level.</p>
+        <span class="deliv-format">face_id/rgb/*.JPG</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>Thermal Imagery</h3>
+        <p>False-color thermal frames auto-paired to RGB by sequential filename index. Useful for
+        identifying subsurface moisture, delamination, and thermal anomalies not visible in visible
+        light imagery.</p>
+        <span class="deliv-format">face_id/therm/*.JPG</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>Engineering Drawing Reference</h3>
+        <p>Cropped elevation from the firm's provided drawing PDF, rendered at 2× resolution as
+        the base layer for the grid overlay. One drawing per face.</p>
+        <span class="deliv-format">face_id/background_drawings/drawing.jpg</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>Notes Export (CSV)</h3>
+        <p>All zone-level notes captured during DMC's QA review before delivery: face, floor, bay,
+        notes text. Loads into Excel or any spreadsheet tool. Additional notes added by the
+        engineer of record are exportable separately from the viewer.</p>
+        <span class="deliv-format">notes_export.csv</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>Notes Export (Tab-Separated)</h3>
+        <p>Same content as the CSV, tab-separated for pasting directly into Word or a report
+        template without import dialogs.</p>
+        <span class="deliv-format">notes_export.txt</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Engineer-Generated Exports (from the viewer)</div>
+    <p>The engineer of record generates these outputs from within <code>viewer.html</code> after
+    completing their assessment. DMC doesn't produce them; they're outputs of the inspection
+    process that the engineer controls.</p>
+
+    <div class="deliv-grid">
+
+      <div class="deliv-card">
+        <h3>Annotation Save File</h3>
+        <p>Complete annotation state: all condition ratings, observation categories, notes,
+        flagged zones, and image annotations (circles, boxes, arrows). Saved as JSON with
+        timestamp and project identifier. Reloads cleanly in subsequent sessions.</p>
+        <span class="deliv-format">[project_number]_annotations_[timestamp].json</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>CSV Export: All Zones</h3>
+        <p>One row per zone: Face, Floor, Bay, Rating, Category, Notes, Flagged, Annotations.
+        Covers every zone in the project. Opens in Excel. Input for downstream reporting
+        or FISP database entry.</p>
+        <span class="deliv-format">inspection_notes.csv</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>Flagged Zones Report</h3>
+        <p>Plain-text list of all zones marked for follow-up. Includes face, floor, bay, rating,
+        category, notes, and annotation coordinates for each flagged zone. Fast reference for
+        remediation scope or engineer prioritization.</p>
+        <span class="deliv-format">flagged_zones.txt</span>
+      </div>
+
+      <div class="deliv-card">
+        <h3>Print Report</h3>
+        <p>One page per building face. Each page shows the engineering drawing with grid overlay,
+        zone labels visible on each cell, and a notes table below: Floor, Bay, Rating, Category,
+        Notes, Flagged, Annotations. Print to PDF from browser. Formatted for inclusion in a
+        professional inspection package.</p>
+        <span class="deliv-format">Browser print → PDF</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Annotation Tools in the Viewer</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Tool</th><th>How It Works</th><th>Typical Use</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Circle</strong></td>
+          <td>Draw by drag on the image pair</td>
+          <td>Isolate a defect area, circle a spall or crack</td>
+        </tr>
+        <tr>
+          <td><strong>Box</strong></td>
+          <td>Draw rectangle by drag</td>
+          <td>Delineate an affected area, outline a stain extent</td>
+        </tr>
+        <tr>
+          <td><strong>Arrow</strong></td>
+          <td>Draw directional line by drag</td>
+          <td>Point to a specific location, indicate crack direction</td>
+        </tr>
+        <tr>
+          <td><strong>Undo / Redo</strong></td>
+          <td>Step through annotation history</td>
+          <td>Correct placement, rework annotations</td>
+        </tr>
+        <tr>
+          <td><strong>Clear</strong></td>
+          <td>Remove all annotations for the current zone</td>
+          <td>Start over on a zone</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:12px">
+      Annotation color matches the selected observation category: spalling annotations are
+      red, cracking are orange, efflorescence are blue, etc. Colors persist in saved annotation
+      JSON and rerender on load.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Condition Rating System</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Rating</th><th>Meaning</th><th>Viewer Color</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-safe">Safe</span></td>
+          <td>No hazardous condition. Document for trend monitoring.</td>
+          <td><span class="status-dot status-safe"></span>Green</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-swarmp">SWARMP</span></td>
+          <td>Safe With A Repair and Maintenance Program. Requires remediation
+          within the next inspection cycle.</td>
+          <td><span class="status-dot status-swarmp"></span>Amber</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-unsafe">Unsafe</span></td>
+          <td>Hazardous condition. Requires immediate protective measures and remediation.</td>
+          <td><span class="status-dot status-unsafe"></span>Red</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Observation Categories</div>
+    <div class="card">
+      <p>Standard categories available in the viewer dropdown, color-coded when used as
+      annotation color:</p>
+      <table class="data-table" style="margin-top:12px">
+        <thead><tr><th>Category</th><th>Annotation Color</th></tr></thead>
+        <tbody>
+          <tr><td>Spalling</td><td style="color:#ff6b6b">■ Red (#ff6b6b)</td></tr>
+          <tr><td>Cracking</td><td style="color:#ffa500">■ Orange (#ffa500)</td></tr>
+          <tr><td>Efflorescence</td><td style="color:#a0c4ff">■ Blue (#a0c4ff)</td></tr>
+          <tr><td>Rust Staining</td><td style="color:#cd7f32">■ Bronze (#cd7f32)</td></tr>
+          <tr><td>Missing Mortar</td><td style="color:#ffff66">■ Yellow (#ffff66)</td></tr>
+          <tr><td>Exposed Rebar</td><td style="color:#ff4444">■ Bright Red (#ff4444)</td></tr>
+          <tr><td>Delamination</td><td style="color:#ff69b4">■ Pink (#ff69b4)</td></tr>
+          <tr><td>Staining</td><td style="color:#9b59b6">■ Purple (#9b59b6)</td></tr>
+          <tr><td>Other</td><td style="color:#ffff00">■ Yellow (#ffff00), free-text field</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="cta-block">
+    <h2>All of this is functional in the demo</h2>
+    <p>The interactive viewer demonstrates every tool described above using fictional building data.
+    Annotations, exports, and print report are all operational.</p>
+    <a href="viewer.html" class="btn">Open Interactive Demo</a>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div><strong>Digital Mapping Consultants</strong>. Drone and GIS subcontract services. Fully licensed and insured.</div>
+  <div><a href="mailto:dmc@digitalmappingconsultants.org" style="color:inherit">dmc@digitalmappingconsultants.org</a></div>
+</footer>
+
+</body>
+</html>

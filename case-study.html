@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case Study | Digital Mapping Consultants</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">Digital Mapping Consultants</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="case-study.html" class="active">Case Study</a>
+    <a href="viewer.html" class="nav-cta">Interactive Demo</a>
+    <a href="deliverables.html">Deliverables</a>
+    <a href="why-dmc.html">Why DMC</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">Case Study: Facade Inspection Documentation</div>
+  <h1>Meridian Commercial Center<br>Facade Assessment</h1>
+  <p><strong>Fictional building. All data, imagery, and findings are illustrative.</strong>
+  This case study shows the full workflow arc from problem to engineering deliverable.</p>
+</div>
+
+<div class="content-narrow">
+
+  <div class="section">
+    <div class="section-label">Project Summary</div>
+    <ul class="spec-list">
+      <li><span class="spec-key">Building</span><span class="spec-val">Meridian Commercial Center (fictional)</span></li>
+      <li><span class="spec-key">Address</span><span class="spec-val">340 Commerce Drive (illustrative)</span></li>
+      <li><span class="spec-key">Construction</span><span class="spec-val">8-story masonry, 1968</span></li>
+      <li><span class="spec-key">Inspection cycle</span><span class="spec-val">Periodic Inspection Safety Program</span></li>
+      <li><span class="spec-key">Faces documented</span><span class="spec-val">2 (North, East), demo subset</span></li>
+      <li><span class="spec-key">Total zones</span><span class="spec-val">25 (16 north + 9 east)</span></li>
+      <li><span class="spec-key">Image pairs</span><span class="spec-val">25 RGB + 25 thermal</span></li>
+      <li><span class="spec-key">Capture time</span><span class="spec-val">~4 hours on-site (both faces)</span></li>
+      <li><span class="spec-key">Deliverable</span><span class="spec-val">Offline HTML viewer + CSV + print report</span></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">The Problem</div>
+    <h2>Engineering firm needed organized drone documentation across two building faces</h2>
+    <p>The structural engineering firm held the inspection contract and had its own elevation
+    drawings. What they needed was systematic drone coverage of each face, with every floor-bay zone
+    documented with both RGB and thermal and organized so their engineer of record could work through
+    each zone methodically without managing hundreds of loose image files. A stitched 3D model was not
+    the goal, and not even an option: the flat, repetitive, reflective masonry is the kind of surface
+    that breaks photogrammetry, so the deliverable is an organized two-dimensional record indexed to
+    the drawings.</p>
+    <p>The building's masonry construction required both RGB capture (surface condition, cracking,
+    spalling, staining) and thermal capture (subsurface moisture, delamination, potential void
+    behind the facade plane). Scaffolding access for this scope of coverage would have required a
+    multi-day sidewalk bridge installation.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Data Collection</div>
+    <h2>Systematic flight per face: two capture passes each</h2>
+    <p>Each building face received two flight passes at different altitudes. The first pass covered
+    the lower floors at close range; the second covered the upper floors and parapet zone. A DJI
+    drone with RGB and thermal cameras captured both simultaneously, with the thermal file
+    auto-pairing to RGB by sequential filename index.</p>
+    <p>Images were sorted into face/floor/bay directories on-site and verified against the
+    elevation drawing before the next face was flown. Any zones with incomplete coverage were
+    reflown before leaving the site.</p>
+    <div class="callout" style="margin-top:24px">
+      <strong>No scaffolding, no sidewalk shed.</strong> Both faces were documented from the
+      public right-of-way and building-owned airspace. Total on-site time: approximately 4 hours
+      including setup, flight, and image verification.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Zone Assignment</div>
+    <h2>Engineering drawing as the grid reference</h2>
+    <p>The firm's elevation drawings were loaded into DMC's authoring tool as base layers.
+    A grid was applied to each drawing to match the floor and bay structure, adjusted to align
+    with the actual structural grid visible in the elevation, not a uniform default.
+    Each grid cell becomes an inspection zone that the engineer can click to view imagery.</p>
+    <p>For the north facade: 4 bays × 4 zones (Ground through Parapet) = 16 zones.
+    For the east facade: 3 bays × 3 zones (Ground through 3rd Floor) = 9 zones.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Documentation Findings: North Facade (Sample)</div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Zone</th>
+            <th>Rating</th>
+            <th>Category</th>
+            <th>Notes (abbreviated)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>3rd Floor / N2</td>
+            <td><span class="badge badge-swarmp">SWARMP</span></td>
+            <td>Cracking</td>
+            <td>Hairline crack at sill line, approx. 18&Prime;, vertical through mortar joint. Monitor.</td>
+          </tr>
+          <tr>
+            <td>2nd Floor / N3</td>
+            <td><span class="badge badge-unsafe">Unsafe</span></td>
+            <td>Spalling</td>
+            <td>Active spalling on 2nd floor masonry surface, 4&Prime;&times;6&Prime; section. Loose material. Flagged for immediate review.</td>
+          </tr>
+          <tr>
+            <td>Ground / N1</td>
+            <td><span class="badge badge-swarmp">SWARMP</span></td>
+            <td>Efflorescence</td>
+            <td>Mineral deposit pattern consistent with ground moisture infiltration. Review foundation drainage at grade.</td>
+          </tr>
+          <tr>
+            <td>Parapet / N4</td>
+            <td><span class="badge badge-safe">Safe</span></td>
+            <td>Staining</td>
+            <td>Weathering stain below coping. No cracking or spalling. Document for trend monitoring.</td>
+          </tr>
+          <tr>
+            <td>2nd Floor / E2 (East)</td>
+            <td><span class="badge badge-swarmp">SWARMP</span></td>
+            <td>Missing Mortar</td>
+            <td>Joint deterioration at window head, 2 to 3 linear feet. Repointing likely required.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:10px">
+      All findings above are fictional and illustrative. The interactive demo contains this
+      pre-populated data. Open any zone to see the full annotation interface.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">How the Engineering Firm Uses the Deliverable</div>
+    <h2>The viewer runs offline from a zip file</h2>
+    <p>The deliverable zip is sent to the engineer of record by email or shared drive. The engineer
+    unzips it, opens <code>viewer.html</code> in any browser, and works through the building
+    face-by-face. The engineering drawing is visible with the grid overlay. Each zone is
+    color-coded by image coverage (green = RGB + thermal, yellow = RGB only, red = no images).
+    Clicking any zone opens the image pair in a lightbox.</p>
+    <p>The engineer assigns condition ratings, selects observation categories from the FISP
+    standard list, adds inspection notes, draws annotations directly on the imagery, and flags
+    zones for follow-up. All of this is saved to a JSON file that reloads cleanly in a subsequent
+    session. No cloud sync required.</p>
+    <p>When the assessment is complete, the engineer exports a CSV for all zones and generates
+    a print report (one page per face, with the annotated drawing and a notes table) that feeds
+    into their final inspection report to the authority having jurisdiction.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why This Matters for the Engineering Firm</div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Documentation is already organized</h3>
+        <p style="font-size:14px;color:var(--text-muted)">Images arrive sorted by face, floor,
+        and bay. The engineer doesn't sift through a folder of 200 unsorted drone shots. They
+        click a zone and the relevant pair is there.</p>
+      </div>
+      <div class="card">
+        <h3>The deliverable is an engineering documentation record</h3>
+        <p style="font-size:14px;color:var(--text-muted)">Annotations, ratings, and notes are
+        saved with timestamps and project identifiers. The print report is formatted for inclusion
+        in a professional inspection package.</p>
+      </div>
+      <div class="card">
+        <h3>No software dependency</h3>
+        <p style="font-size:14px;color:var(--text-muted)">The viewer is an HTML file. It works
+        on any laptop with any browser. No account, no license, no internet connection. The firm
+        can hand it to a client or subconsultant without any setup instructions.</p>
+      </div>
+      <div class="card">
+        <h3>Repeatable across projects</h3>
+        <p style="font-size:14px;color:var(--text-muted)">Same process, same deliverable format
+        on every building. Engineering staff who've used it on one project know exactly what to
+        expect on the next one. The pipeline is not project-specific.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-block">
+    <h2>The demo viewer contains this project's data</h2>
+    <p>All the sample findings above are pre-loaded. Open any zone, add annotations,
+    export the CSV, or run the print report.</p>
+    <a href="viewer.html" class="btn">Open Interactive Demo</a>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div><strong>Digital Mapping Consultants</strong>. Drone and GIS subcontract services. Fully licensed and insured.</div>
+  <div><a href="mailto:dmc@digitalmappingconsultants.org" style="color:inherit">dmc@digitalmappingconsultants.org</a></div>
+</footer>
+
+</body>
+</html>

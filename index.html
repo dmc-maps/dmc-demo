@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Building Envelope Documentation | Digital Mapping Consultants</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">Digital Mapping Consultants</a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Overview</a>
+    <a href="case-study.html">Case Study</a>
+    <a href="viewer.html" class="nav-cta">Interactive Demo</a>
+    <a href="deliverables.html">Deliverables</a>
+    <a href="why-dmc.html">Why DMC</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">Digital Mapping Consultants</div>
+  <h1>Facade documentation built for the buildings that break photogrammetry</h1>
+  <p>DMC flies your building faces and delivers a drawing-indexed record of paired RGB and
+  thermal imagery, organized by floor and bay, in an offline viewer your engineer of record
+  opens and files. No stitching, no cloud, no failed 3D model. Owner-operated, subcontracted
+  to firms that hold the inspection contract.</p>
+  <p style="color:var(--text-muted);font-size:14px;margin-top:12px">Field-proven on a live NYC
+  FISP project: all ten building faces of a Bronx building captured and documented for the
+  engineer of record.</p>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-label">The Problem</div>
+    <div class="card">
+      <p>Firms that have tried drone capture for facades usually get back one of two things: a
+      folder of thousands of unsorted images, or a photogrammetry model that failed to stitch
+      because the facade was flat, repetitive, and reflective. Neither is something an engineer
+      can file. A facade inspection needs systematic, high-resolution coverage of every building
+      face, organized by floor and bay, with paired thermal imagery to flag moisture and
+      delamination not visible in RGB. Drone capture covers those faces in a fraction of the time
+      and cost of scaffolding, but only when the output is organized into a record rather than
+      dumped as raw files.</p>
+      <p>The resulting deliverable needs to be usable by the engineer of record without
+      installing software, loading a project file, or waiting on a cloud platform. It needs to
+      open offline, on any laptop, and serve as an engineering documentation record.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Workflow</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Drone Capture</h3>
+          <p>Each building face flown systematically at consistent altitude with overlapping passes.
+          RGB and thermal captured simultaneously. Coverage organized by face, one flight sequence
+          per elevation, named by building side. Thermal camera paired to RGB by filename index.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Zone Mapping</h3>
+          <p>Engineering elevation drawing loaded as base layer. A grid is applied to match
+          the floor and bay structure of the building. Each cell corresponds to one inspection
+          zone. Zone dimensions are adjusted to the actual structural grid, not a uniform default.
+          All imagery is then assigned to zones by floor and bay position.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Documentation Package Built</h3>
+          <p>Export script assembles the deliverable: engineering drawing per face, all imagery
+          sorted into face/zone directories, a pre-built viewer, and a CSV of any notes captured
+          during QA review. The deliverable is a single zip file. No cloud upload, no login.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Engineering Review</h3>
+          <p>Engineer of record unzips and opens <code>viewer.html</code> in any browser.
+          Zones are visible on the elevation drawing. Each zone opens to the paired RGB and
+          thermal images. Engineer assigns condition ratings (Safe / SWARMP / Unsafe),
+          observation categories, notes, and annotates directly on the imagery. Work is saved
+          as a JSON file and loaded back in later sessions. CSV and flagged-zone exports
+          feed downstream reporting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">What the Engineer Receives</div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Offline HTML Viewer</h3>
+        <p style="color:var(--text-muted);font-size:14px">Self-contained interactive report.
+        Opens in any browser. No installation. Works on an airgapped laptop. Engineering drawing
+        with interactive zone grid. Each zone contains its image pair and annotation tools.</p>
+      </div>
+      <div class="card">
+        <h3>Condition Documentation &amp; Annotation</h3>
+        <p style="color:var(--text-muted);font-size:14px">Safe / SWARMP / Unsafe rating per zone,
+        FISP-standard observation categories (Spalling, Cracking, Efflorescence, Rust Staining,
+        Missing Mortar, Exposed Rebar, Delamination, Staining), free-text notes, and a
+        flag-for-follow-up checkbox. Circle, box, and arrow tools draw directly on the
+        RGB/thermal image pair, color-coded by category. Undo and redo supported. Ratings, notes,
+        and annotations save to JSON and persist across sessions.</p>
+      </div>
+      <div class="card">
+        <h3>Export Outputs</h3>
+        <p style="color:var(--text-muted);font-size:14px">CSV export of all zone data (face, floor,
+        bay, rating, category, notes). Flagged zones as plain-text report. Print-ready PDF via
+        browser print. One page per face with grid overlay and notes table.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Scope of DMC's Role</div>
+    <div class="callout">
+      <strong>DMC subcontracts to firms that already hold the inspection contract.</strong>
+      DMC provides drone capture and documentation package delivery. The engineer of record
+      provides the elevation drawings, performs condition assessment, and produces final
+      inspection reports.
+    </div>
+    <table class="data-table">
+      <thead><tr><th>DMC Provides</th><th>Engineering Firm Provides</th></tr></thead>
+      <tbody>
+        <tr><td>Drone capture of all building faces</td><td>Elevation drawings as grid reference</td></tr>
+        <tr><td>RGB + thermal image pairs per zone</td><td>Condition assessment and engineering judgment</td></tr>
+        <tr><td>Offline HTML viewer with annotation tools</td><td>FISP or inspection report authorship</td></tr>
+        <tr><td>CSV export and print report</td><td>Sign-off and submission to AHJ</td></tr>
+        <tr><td>Day-rate delivery, no subscription</td><td>Client relationship and contract</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cta-block">
+    <h2>See it working</h2>
+    <p>The interactive demo uses a fictional building with pre-loaded inspection data.
+    All annotation, export, and print functions are operational.</p>
+    <a href="viewer.html" class="btn">Open Interactive Demo</a>
+    <a href="case-study.html" class="btn btn-outline">Read Case Study</a>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div><strong>Digital Mapping Consultants</strong>. Drone and GIS subcontract services. Fully licensed and insured.</div>
+  <div><a href="mailto:dmc@digitalmappingconsultants.org" style="color:inherit">dmc@digitalmappingconsultants.org</a></div>
+</footer>
+
+</body>
+</html>
